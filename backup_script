@@ -1,0 +1,27 @@
+from pprint import pprint
+from flask import escape
+from datetime import datetime
+
+from googleapiclient import discovery
+from oauth2client.client import GoogleCredentials
+
+def execute_backup(project,instance):
+    
+    credentials = GoogleCredentials.get_application_default()
+
+    service = discovery.build('sqladmin', 'v1beta4', credentials=credentials)
+ 
+    backup_run_body = {
+    }
+
+    request = service.backupRuns().insert(project=project, instance=instance, body=backup_run_body)
+    response = request.execute()
+
+    pprint(response)
+
+def startInstancesPubSub(event, callback):
+    
+    project = 'ipay-sl-staging'
+    instance = 'ipay-staging-database'
+    
+    execute_backup(project,instance)
