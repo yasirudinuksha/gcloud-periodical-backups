@@ -12,7 +12,8 @@ def execute_backup(project,instance):
     service = discovery.build('sqladmin', 'v1beta4', credentials=credentials)
  
     backup_run_body = {
-    }
+  		"description": "ipay-backup"
+	}
 
     request = service.backupRuns().insert(project=project, instance=instance, body=backup_run_body)
     response = request.execute()

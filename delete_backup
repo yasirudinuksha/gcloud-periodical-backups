@@ -1,0 +1,39 @@
+from pprint import pprint
+from flask import escape
+from datetime import datetime
+
+from googleapiclient import discovery
+from oauth2client.client import GoogleCredentials
+
+def execute_listing(project,instance):
+    
+    credentials = GoogleCredentials.get_application_default()
+
+    service = discovery.build('sqladmin', 'v1beta4', credentials=credentials)
+
+    today = datetime.today()
+
+    request = service.backupRuns().list(project=project, instance=instance)
+    while request is not None:
+        response = request.execute()
+
+        for backup_run in response['items']:
+            # TODO: Change code below to process each `backup_run` resource:
+            d1 = datetime.strptime(backup_run["startTime"], "%Y-%m-%dT%H:%M:%S.%fZ")
+            id_ = backup_run["id"]
+            pprint(d1 > today)
+            delta = today - d1
+            print(delta.days)
+
+            if delta.days > 1:
+                delRequest = service.backupRuns().delete(project=project, instance=instance, id=id_)
+                delResponse = delRequest.execute()
+            
+        request = service.backupRuns().list_next(previous_request=request, previous_response=response)
+
+def startInstancesPubSub(event, callback):
+    
+    project = 'ipay-sl-staging'
+    instance = 'ipay-staging-database'
+    
+    execute_listing(project,instance)
