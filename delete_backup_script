@@ -33,7 +33,7 @@ def execute_listing(project,instance):
 
 def startInstancesPubSub(event, callback):
     
-    project = 'ipay-sl-staging'
-    instance = 'ipay-staging-database'
+    project = ''
+    instance = ''
     
     execute_listing(project,instance)
